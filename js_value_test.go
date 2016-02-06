@@ -1,6 +1,8 @@
 package jsgo_test
 
 import (
+	"runtime"
+
 	. "github.com/go-zero/jsgo"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/ginkgo/extensions/table"
@@ -21,6 +23,7 @@ var _ = Describe("JsValue", func() {
 		func(code string, check CheckFunction) {
 			value, _ := state.DoString(code)
 			Expect(check(value)).To(BeTrue())
+			runtime.GC() // force the unreferencing of the value
 		},
 		Entry("defined", "1", (*JsValue).IsDefined),
 		Entry("undefined", "{}", (*JsValue).IsUndefined),

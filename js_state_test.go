@@ -31,9 +31,13 @@ var _ = Describe("JsState", func() {
 		It("Should return an error when try to run an invalid code", func() {
 			_, err := state.DoString("a")
 			Expect(err).To(HaveOccurred())
-
 			jsError, _ := err.(*JsError)
 			Expect(jsError.Name).To(Equal("ReferenceError"))
+
+			_, err = state.DoString("1{}")
+			Expect(err).To(HaveOccurred())
+			jsError, _ = err.(*JsError)
+			Expect(jsError.Name).To(Equal("SyntaxError"))
 		})
 
 	})
