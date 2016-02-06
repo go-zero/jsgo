@@ -1,1 +1,1 @@
-# JSGO ![Build Status](https://travis-ci.org/go-zero/jsgo.svg?branch=master)
+# JSGO [![Build Status](https://travis-ci.org/go-zero/jsgo.svg?branch=master)](https://travis-ci.org/go-zero/jsgo) [![GoDoc](https://godoc.org/github.com/go-zero/jsgo?status.png)](https://godoc.org/github.com/go-zero/jsgo) [![Coverage Status](https://coveralls.io/repos/go-zero/jsgo/badge.svg?branch=master&service=github)](https://coveralls.io/github/go-zero/jsgo?branch=master) [![Go Report Card](http://goreportcard.com/badge/go-zero/jsgo)](http://goreportcard.com/report/go-zero/jsgo)
