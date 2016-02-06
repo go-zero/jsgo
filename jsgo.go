@@ -1,4 +1,4 @@
 package jsgo
 
-// #cgo CFLAGS: -I${SRCDIR}/mujs
+// #cgo CFLAGS: -Imujs
 import "C"
