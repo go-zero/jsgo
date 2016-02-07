@@ -1,6 +1,7 @@
 package jsgo_test
 
 import (
+	"runtime"
 	"testing"
 
 	. "github.com/go-zero/jsgo"
@@ -15,6 +16,10 @@ type JsErrorTestSuite struct {
 
 func (s *JsErrorTestSuite) SetupTest() {
 	s.state = NewJsState()
+}
+
+func (s *JsErrorTestSuite) TearDownTest() {
+	runtime.GC()
 }
 
 func (s *JsErrorTestSuite) TestStandardError() {

@@ -1,6 +1,7 @@
 package jsgo_test
 
 import (
+	"runtime"
 	"testing"
 
 	. "github.com/go-zero/jsgo"
@@ -15,6 +16,10 @@ type JsCallableTestSuite struct {
 
 func (s *JsCallableTestSuite) SetupTest() {
 	s.state = NewJsState()
+}
+
+func (s *JsCallableTestSuite) TearDownTest() {
+	runtime.GC()
 }
 
 func (s *JsCallableTestSuite) TestBeCallable() {

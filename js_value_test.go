@@ -1,6 +1,7 @@
 package jsgo_test
 
 import (
+	"runtime"
 	"testing"
 
 	. "github.com/go-zero/jsgo"
@@ -17,6 +18,10 @@ type JsValueTestSuite struct {
 
 func (s *JsValueTestSuite) SetupTest() {
 	s.state = NewJsState()
+}
+
+func (s *JsValueTestSuite) TearDownTest() {
+	runtime.GC()
 }
 
 func (s *JsValueTestSuite) TestTypes() {
