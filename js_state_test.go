@@ -1,45 +1,46 @@
 package jsgo_test
 
 import (
+	"testing"
+
 	. "github.com/go-zero/jsgo"
-	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	. "github.com/stretchr/testify/suite"
 )
 
-var _ = Describe("JsState", func() {
+type JsStateTestSuite struct {
+	Suite
+	state *JsState
+}
 
-	Context("with a new one", func() {
-		var state *JsState
+func (s *JsStateTestSuite) SetupTest() {
+	s.state = NewJsState()
+}
 
-		BeforeEach(func() {
-			state = NewJsState()
-		})
+func (s *JsStateTestSuite) TestToNotBeNil() {
+	Expect(s.state).ToNot(BeNil())
+}
 
-		AfterEach(func() {
-			state.Free()
-		})
+func (s *JsStateTestSuite) TestRunAPieceOfCode() {
+	_, err := s.state.DoString("1")
+	Expect(err).ToNot(HaveOccurred())
+}
 
-		It("Shouldn't be null", func() {
-			Expect(state).ToNot(BeNil())
-		})
+func (s *JsStateTestSuite) TestErrorHandling() {
+	_, err := s.state.DoString("a")
+	Expect(err).To(HaveOccurred())
+	jsError, _ := err.(*JsError)
+	Expect(jsError.Name).To(Equal("ReferenceError"))
+}
 
-		It("Should be able to run a piece of code", func() {
-			_, err := state.DoString("1")
-			Expect(err).ToNot(HaveOccurred())
-		})
+func (s *JsStateTestSuite) TestSyntaxErrorHandling() {
+	_, err := s.state.DoString("1{}")
+	Expect(err).To(HaveOccurred())
+	jsError, _ := err.(*JsError)
+	Expect(jsError.Name).To(Equal("SyntaxError"))
+}
 
-		It("Should return an error when try to run an invalid code", func() {
-			_, err := state.DoString("a")
-			Expect(err).To(HaveOccurred())
-			jsError, _ := err.(*JsError)
-			Expect(jsError.Name).To(Equal("ReferenceError"))
-
-			_, err = state.DoString("1{}")
-			Expect(err).To(HaveOccurred())
-			jsError, _ = err.(*JsError)
-			Expect(jsError.Name).To(Equal("SyntaxError"))
-		})
-
-	})
-
-})
+func TestJsStateTestSuite(t *testing.T) {
+	RegisterTestingT(t)
+	Run(t, new(JsStateTestSuite))
+}

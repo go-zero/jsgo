@@ -1,22 +1,28 @@
 package jsgo_test
 
 import (
-	"fmt"
+	"testing"
 
 	. "github.com/go-zero/jsgo"
-	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	. "github.com/stretchr/testify/suite"
 )
 
-var _ = Describe("JsError", func() {
+type JsErrorTestSuite struct {
+	Suite
+	state *JsState
+}
 
-	var name = "ErrorName"
-	var message = "something useful"
-	var stackTrace = "\n[foo.js]:1 some issue"
+func (s *JsErrorTestSuite) SetupTest() {
+	s.state = NewJsState()
+}
 
-	It("Should generate the expected output", func() {
-		err := &JsError{name, message, stackTrace}
-		Expect(err.Error()).To(Equal(fmt.Sprintf("%s: %s%s", name, message, stackTrace)))
-	})
+func (s *JsErrorTestSuite) TestStandardError() {
+	_, err := s.state.DoString("a = 1")
+	Expect(err).To(HaveOccurred())
+}
 
-})
+func TestJsErrorTestSuite(t *testing.T) {
+	RegisterTestingT(t)
+	Run(t, new(JsErrorTestSuite))
+}

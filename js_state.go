@@ -3,7 +3,10 @@ package jsgo
 // #include "mujs.h"
 // #include <stdlib.h>
 import "C"
-import "unsafe"
+import (
+	"runtime"
+	"unsafe"
+)
 
 // JsState ...
 type JsState struct {
@@ -14,11 +17,11 @@ type JsState struct {
 func NewJsState() *JsState {
 	state := new(JsState)
 	state.vm = C.js_newstate(nil, nil, 1) // JS_STRICT
+	runtime.SetFinalizer(state, (*JsState).free)
 	return state
 }
 
-// Free ...
-func (state *JsState) Free() {
+func (state *JsState) free() {
 	C.js_freestate(state.vm)
 }
 
