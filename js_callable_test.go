@@ -29,7 +29,7 @@ func (s *JsCallableTestSuite) TestBeCallable() {
 	Expect(result.Integer()).To(Equal(42))
 }
 
-func (s *JsCallableTestSuite) TestCallMultipleArgs() {
+func (s *JsCallableTestSuite) TestCallWithMultipleArgs() {
 	code := `new Function("var args = Array.prototype.slice.call(arguments);return args.join(',')")`
 	value, err := s.state.DoString(code)
 	Expect(err).ToNot(HaveOccurred())
@@ -42,7 +42,7 @@ func (s *JsCallableTestSuite) TestCallMultipleArgs() {
 	Expect(result.String()).To(Equal("42,hello,true,17.89,,false"))
 }
 
-func (s *JsCallableTestSuite) TestErrors() {
+func (s *JsCallableTestSuite) TestToReturnError() {
 	value, err := s.state.DoString(`new Function("throw 'fuuuuu'")`)
 	Expect(err).ToNot(HaveOccurred())
 

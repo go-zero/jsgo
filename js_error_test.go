@@ -20,6 +20,7 @@ func (s *JsErrorTestSuite) SetupTest() {
 func (s *JsErrorTestSuite) TestStandardError() {
 	_, err := s.state.DoString("a = 1")
 	Expect(err).To(HaveOccurred())
+	Expect(err.Error()).To(ContainSubstring("ReferenceError: assignment to undeclared variable 'a'"))
 }
 
 func TestJsErrorTestSuite(t *testing.T) {
