@@ -46,7 +46,6 @@ func newJsValue(state *JsState) JsValue {
 
 	if basic.IsObject() {
 		object := &JsObject{basic}
-		value = object
 
 		switch {
 		case object.IsCallable():
@@ -55,6 +54,8 @@ func newJsValue(state *JsState) JsValue {
 			value = &JsArray{object}
 		case object.IsRegExp():
 			value = &JsRegExp{object}
+		default:
+			value = object
 		}
 	}
 

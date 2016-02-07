@@ -14,48 +14,48 @@ type CheckFunction func(JsValue) bool
 var _ = Describe("JsValue", func() {
 	state := NewJsState()
 
-	It("Should return a float value", func() {
+	It("Should return a float", func() {
 		value, _ := state.DoString("182.0")
 		Expect(value.Float()).To(Equal(182.0))
 	})
 
-	It("Should return an integer value", func() {
+	It("Should return an integer", func() {
 		value, _ := state.DoString("42")
 		Expect(value.Integer()).To(Equal(42))
 	})
 
-	It("Should return a string value", func() {
+	It("Should return a string", func() {
 		value, _ := state.DoString("'Hello World!'")
 		Expect(value.String()).To(Equal("Hello World!"))
 	})
 
 	It("Should return a boolean", func() {
 		value, _ := state.DoString("true")
-		Expect(value.Bool()).To(Equal(true))
+		Expect(value.Bool()).To(BeTrue())
 	})
 
 	It("Should return a callable", func() {
 		value, _ := state.DoString("new Function()")
 		_, ok := value.(*JsCallable)
-		Expect(ok).To(Equal(true))
+		Expect(ok).To(BeTrue())
 	})
 
 	It("Should return an object", func() {
 		value, _ := state.DoString("new Object()")
 		_, ok := value.(*JsObject)
-		Expect(ok).To(Equal(true))
+		Expect(ok).To(BeTrue())
 	})
 
 	It("Should return an array", func() {
 		value, _ := state.DoString("new Array()")
 		_, ok := value.(*JsArray)
-		Expect(ok).To(Equal(true))
+		Expect(ok).To(BeTrue())
 	})
 
 	It("Should return a regexp", func() {
 		value, _ := state.DoString("new RegExp()")
 		_, ok := value.(*JsRegExp)
-		Expect(ok).To(Equal(true))
+		Expect(ok).To(BeTrue())
 	})
 
 	DescribeTable("Should identify the value type",
