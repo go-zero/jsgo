@@ -16,22 +16,85 @@ import (
 )
 
 // JsValue ...
-type JsValue struct {
+type JsValue interface {
+	Float() float64
+	Integer() int
+	String() string
+	Bool() bool
+	IsDefined() bool
+	IsUndefined() bool
+	IsNumber() bool
+	IsString() bool
+	IsBool() bool
+	IsNull() bool
+	IsPrimitive() bool
+	IsCallable() bool
+	IsObject() bool
+	IsArray() bool
+	IsRegExp() bool
+	unref()
+}
+
+type basicValue struct {
 	state *JsState
 	ref   *C.char
 }
 
-func newJsValue(state *JsState) *JsValue {
-	value := &JsValue{state, C.js_ref(state.vm)}
-	runtime.SetFinalizer(value, (*JsValue).unref)
+func newJsValue(state *JsState) JsValue {
+	basic := &basicValue{state, C.js_ref(state.vm)}
+	var value JsValue = basic
+
+	if basic.IsObject() {
+		object := &JsObject{basic}
+		value = object
+
+		switch {
+		case object.IsCallable():
+			value = &JsCallable{object}
+		case object.IsArray():
+			value = &JsArray{object}
+		case object.IsRegExp():
+			value = &JsRegExp{object}
+		}
+	}
+
+	runtime.SetFinalizer(value, JsValue.unref)
 	return value
 }
 
-func (value *JsValue) unref() {
+func (value *basicValue) unref() {
 	C.js_unref(value.state.vm, value.ref)
 }
 
-func (value *JsValue) check(f unsafe.Pointer) bool {
+// Float ...
+func (value *basicValue) Float() float64 {
+	C.js_getregistry(value.state.vm, value.ref)
+	defer C.js_pop(value.state.vm, 1)
+	return float64(C.js_tonumber(value.state.vm, 0))
+}
+
+// Integer ...
+func (value *basicValue) Integer() int {
+	C.js_getregistry(value.state.vm, value.ref)
+	defer C.js_pop(value.state.vm, 1)
+	return int(C.js_toint32(value.state.vm, 0))
+}
+
+// String ...
+func (value *basicValue) String() string {
+	C.js_getregistry(value.state.vm, value.ref)
+	defer C.js_pop(value.state.vm, 1)
+	return C.GoString(C.js_tostring(value.state.vm, 0))
+}
+
+// Bool ...
+func (value *basicValue) Bool() bool {
+	C.js_getregistry(value.state.vm, value.ref)
+	defer C.js_pop(value.state.vm, 1)
+	return C.js_toboolean(value.state.vm, 0) == 1
+}
+
+func (value *basicValue) check(f unsafe.Pointer) bool {
 	// put the reference on stack
 	C.js_getregistry(value.state.vm, value.ref)
 	defer C.js_pop(value.state.vm, 1)
@@ -40,67 +103,57 @@ func (value *JsValue) check(f unsafe.Pointer) bool {
 	return C.check(f, value.state.vm) == 1
 }
 
-// String ...
-func (value *JsValue) String() string {
-	// put the reference on stack
-	C.js_getregistry(value.state.vm, value.ref)
-	defer C.js_pop(value.state.vm, 1)
-
-	toString := C.js_tostring(value.state.vm, 0)
-	return C.GoString(toString)
-}
-
 // IsDefined ...
-func (value *JsValue) IsDefined() bool {
+func (value *basicValue) IsDefined() bool {
 	return value.check(C.js_isdefined)
 }
 
 // IsUndefined ...
-func (value *JsValue) IsUndefined() bool {
+func (value *basicValue) IsUndefined() bool {
 	return value.check(C.js_isundefined)
 }
 
 // IsNumber ...
-func (value *JsValue) IsNumber() bool {
+func (value *basicValue) IsNumber() bool {
 	return value.check(C.js_isnumber)
 }
 
 // IsString ...
-func (value *JsValue) IsString() bool {
+func (value *basicValue) IsString() bool {
 	return value.check(C.js_isstring)
 }
 
-// IsBoolean ...
-func (value *JsValue) IsBoolean() bool {
+// IsBool ...
+func (value *basicValue) IsBool() bool {
 	return value.check(C.js_isboolean)
 }
 
 // IsNull ...
-func (value *JsValue) IsNull() bool {
+func (value *basicValue) IsNull() bool {
 	return value.check(C.js_isnull)
 }
 
 // IsPrimitive ...
-func (value *JsValue) IsPrimitive() bool {
+func (value *basicValue) IsPrimitive() bool {
 	return value.check(C.js_isprimitive)
 }
 
 // IsCallable ...
-func (value *JsValue) IsCallable() bool {
+func (value *basicValue) IsCallable() bool {
 	return value.check(C.js_iscallable)
 }
 
 // IsObject ...
-func (value *JsValue) IsObject() bool {
+func (value *basicValue) IsObject() bool {
 	return value.check(C.js_isobject)
 }
 
 // IsArray ...
-func (value *JsValue) IsArray() bool {
+func (value *basicValue) IsArray() bool {
 	return value.check(C.js_isarray)
 }
 
 // IsRegexp ...
-func (value *JsValue) IsRegexp() bool {
+func (value *basicValue) IsRegExp() bool {
 	return value.check(C.js_isregexp)
 }

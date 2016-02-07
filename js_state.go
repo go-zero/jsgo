@@ -23,7 +23,7 @@ func (state *JsState) Free() {
 }
 
 // DoString ...
-func (state *JsState) DoString(text string) (*JsValue, error) {
+func (state *JsState) DoString(text string) (JsValue, error) {
 	source := C.CString(text)
 	defer C.free(unsafe.Pointer(source))
 
