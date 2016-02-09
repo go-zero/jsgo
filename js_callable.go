@@ -11,7 +11,7 @@ type JsCallable struct {
 }
 
 // Call ...
-func (callable *JsCallable) Call(args ...interface{}) (JsValue, error) {
+func (callable *JsCallable) Call(args ...interface{}) (JsValue, JsError) {
 	// push function
 	C.js_getregistry(callable.state.vm, callable.ref)
 
@@ -46,7 +46,7 @@ func (callable *JsCallable) Call(args ...interface{}) (JsValue, error) {
 
 	// call the function
 	if rc := C.js_pcall(callable.state.vm, C.int(argsCount)); rc != 0 {
-		return nil, callable.state.getError()
+		return nil, newJsError(callable.state)
 	}
 
 	// return the result

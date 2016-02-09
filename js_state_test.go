@@ -34,15 +34,13 @@ func (s *JsStateTestSuite) TestRunAPieceOfCode() {
 func (s *JsStateTestSuite) TestErrorHandling() {
 	_, err := s.state.DoString("a")
 	Expect(err).To(HaveOccurred())
-	jsError, _ := err.(*JsError)
-	Expect(jsError.Name).To(Equal("ReferenceError"))
+	Expect(err.Error()).To(ContainSubstring("ReferenceError"))
 }
 
 func (s *JsStateTestSuite) TestSyntaxErrorHandling() {
 	_, err := s.state.DoString("1{}")
 	Expect(err).To(HaveOccurred())
-	jsError, _ := err.(*JsError)
-	Expect(jsError.Name).To(Equal("SyntaxError"))
+	Expect(err.Error()).To(ContainSubstring("SyntaxError"))
 }
 
 func TestJsStateTestSuite(t *testing.T) {

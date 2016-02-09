@@ -1,15 +1,28 @@
 package jsgo
 
-import "fmt"
+// #include "mujs.h"
+import "C"
 
 // JsError ...
-type JsError struct {
-	Name       string
-	Message    string
-	StackTrace string
+type JsError interface {
+	Value() JsValue
+	Error() string
 }
 
-// JsError ...
-func (err JsError) Error() string {
-	return fmt.Sprintf("%s: %s%s", err.Name, err.Message, err.StackTrace)
+type basicError struct {
+	value JsValue
+}
+
+func newJsError(state *JsState) JsError {
+	return &basicError{newJsValue(state)}
+}
+
+// Value ...
+func (err basicError) Value() JsValue {
+	return err.value
+}
+
+// Error ...
+func (err basicError) Error() string {
+	return err.value.String()
 }

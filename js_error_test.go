@@ -28,6 +28,12 @@ func (s *JsErrorTestSuite) TestStandardError() {
 	Expect(err.Error()).To(ContainSubstring("ReferenceError: assignment to undeclared variable 'a'"))
 }
 
+func (s *JsErrorTestSuite) TestCustomError() {
+	_, err := s.state.DoString(`(new Function("throw new Object()"))()`)
+	Expect(err).To(HaveOccurred())
+	Expect(err.Value().IsObject()).To(BeTrue())
+}
+
 func TestJsErrorTestSuite(t *testing.T) {
 	RegisterTestingT(t)
 	Run(t, new(JsErrorTestSuite))
