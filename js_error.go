@@ -5,8 +5,8 @@ import "C"
 
 // JsError ...
 type JsError interface {
+	error
 	Value() JsValue
-	Error() string
 }
 
 type basicError struct {
