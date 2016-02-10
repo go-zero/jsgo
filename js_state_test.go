@@ -43,6 +43,14 @@ func (s *JsStateTestSuite) TestSyntaxErrorHandling() {
 	Expect(err.Error()).To(ContainSubstring("SyntaxError"))
 }
 
+func (s *JsStateTestSuite) TestGetAndSetGlobalVariable() {
+	value, err := s.state.DoString("42")
+	Expect(err).ToNot(HaveOccurred())
+
+	s.state.Set("answer", value)
+	Expect(s.state.Get("answer").Integer()).To(Equal(42))
+}
+
 func TestJsStateTestSuite(t *testing.T) {
 	RegisterTestingT(t)
 	Run(t, new(JsStateTestSuite))
