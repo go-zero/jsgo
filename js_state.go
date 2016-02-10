@@ -10,13 +10,15 @@ import (
 
 // JsState ...
 type JsState struct {
-	vm *C.js_State
+	vm     *C.js_State
+	global *JsGlobal
 }
 
 // NewJsState ...
 func NewJsState() *JsState {
 	state := new(JsState)
 	state.vm = C.js_newstate(nil, nil, 1) // JS_STRICT
+	state.global = &JsGlobal{state}
 	runtime.SetFinalizer(state, (*JsState).free)
 	return state
 }
@@ -41,4 +43,9 @@ func (state *JsState) DoString(text string) (JsValue, JsError) {
 	}
 
 	return newJsValue(state), nil
+}
+
+// Global ...
+func (state *JsState) Global() *JsGlobal {
+	return state.global
 }

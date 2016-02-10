@@ -32,7 +32,8 @@ type JsValue interface {
 	IsObject() bool
 	IsArray() bool
 	IsRegExp() bool
-	unref()
+	reference() *C.char
+	unreference()
 }
 
 type basicValue struct {
@@ -59,11 +60,15 @@ func newJsValue(state *JsState) JsValue {
 		}
 	}
 
-	runtime.SetFinalizer(value, JsValue.unref)
+	runtime.SetFinalizer(value, JsValue.unreference)
 	return value
 }
 
-func (value *basicValue) unref() {
+func (value *basicValue) reference() *C.char {
+	return value.ref
+}
+
+func (value *basicValue) unreference() {
 	C.js_unref(value.state.vm, value.ref)
 }
 
